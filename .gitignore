@@ -1,0 +1,6 @@
+*.e
+*.pdf
+*.csv
+*.so
+*.jitcache
+*.DS_Store

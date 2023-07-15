@@ -144,7 +144,6 @@ xelems = '${fparse int(length/height)*yelems}'
 [Outputs]
   file_base = 'cut_${totalCut}_outputs/adjoint'
   csv = true
-  exodus = true
 []
 
 ##---------Optimization stuff------------------#
