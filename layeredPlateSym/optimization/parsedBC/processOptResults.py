@@ -19,6 +19,7 @@ for cut in cut_depth:
 
 #-------------------------------------------------------------------------------
 print('xy_data=')
+force=[]
 for cut in cut_depth:
     results_dir='cut_{:.1f}e-3_outputs/'.format(cut)
     #post-process measurement data with weights
@@ -26,9 +27,20 @@ for cut in cut_depth:
     df = pd.read_csv(name)
     # print('cut= ',cut)
     # print('df= ',df['cutFaceForce'])
+    force.append(-df['cutFaceForce'].iloc[-1])
     xy_data='{:.4f}'.format(cut*1e-3) + ' ' + str(-df['cutFaceForce'].iloc[-1])
     print(xy_data)
 
+print("force=",force)
+fig=plt.figure()
+y_coord=np.flip(cut_depth)
+plt.plot(y_coord,force,'-'\
+             ,linewidth=2,marker='*',label='stress_xx')
+plt.ylabel("Force (N)")
+plt.xlabel("y_coord (mm)")
+plt.grid()
+plt.legend(loc='best', ncol=1)
+plt.tight_layout()
 
 
 #-------------------------------------------------------------------------------
@@ -40,9 +52,9 @@ plt.plot(df_noCut['y']*1e3,df_noCut['stress_xx'],'-'\
 plt.plot(df_noCut['y']*1e3,-df_noCut['inv_stress_xx'],'--'\
              ,linewidth=2,marker='o',label='inv_stress_xx')
 # plt.plot(df_invForce['y']*1e3,df_invForce['stress_xx'],'--'\
-#              ,linewidth=1,marker='o',label='inv_stress_xx')
+#              ,linewidth=1,marker='o',label='invForce_stress_xx')
 plt.ylabel("stress (MPa)")
-plt.xlabel("depth (mm)")
+plt.xlabel("y_coord (mm)")
 plt.grid()
 plt.legend(loc='best', ncol=1)
 plt.tight_layout()

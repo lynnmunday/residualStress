@@ -178,7 +178,7 @@ xelems = '${fparse int(length/height)*yelems}'
 [Outputs]
   file_base = 'cut_${totalCut}_outputs/forward'
   csv = true
-  exodus = true
+  exodus = false
 []
 
 [VectorPostprocessors]

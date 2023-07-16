@@ -143,7 +143,7 @@ xelems = '${fparse int(length/height)*yelems}'
 
 [Outputs]
   file_base = 'cut_${totalCut}_outputs/homoForward'
-  csv = true
+  csv = false
 []
 
 ##---------Optimization stuff------------------#
