@@ -129,12 +129,12 @@ xelems = '${fparse int(length/height)*yelems}'
     variable = disp_x
     value = 0.0
   []
-  [right_x]
-    type = ADDirichletBC
-    boundary = right
-    variable = disp_x
-    value = 0.0
-  []
+  # [right_x]
+  #   type = ADDirichletBC
+  #   boundary = right
+  #   variable = disp_x
+  #   value = 0.0
+  # []
   [right_y]
     type = ADDirichletBC
     boundary = right

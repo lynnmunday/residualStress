@@ -13,7 +13,7 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
   file_xcoord = 'x'
   file_ycoord = 'y'
   file_zcoord = 'z'
-  file_value = 'weighted_diff_disp'
+  file_value = 'weighted_diff_disp_5noise' #'weighted_diff_disp' #'weighted_diff_disp_2noise'
   file_variable_weights = 'weight_disp_x'
 []
 [Executioner]
