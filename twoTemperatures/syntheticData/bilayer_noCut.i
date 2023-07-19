@@ -1,6 +1,8 @@
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
 unitLength = 1.0e-3 #height
+cutIncrement = 0.5e-3
+totalCut = 0.05e-3
 
 height = ${unitLength}
 lengthMultiple = 0.5
@@ -25,19 +27,44 @@ xelems = '${fparse int(length/height)*yelems}'
     ymax = ${height}
     elem_type = QUAD4
   []
-  [midLayer]
-    type = ParsedSubdomainMeshGenerator
+  #######------CUT-------#######
+  [cutFaceRight]
+    type = ParsedGenerateSideset
+    combinatorial_geometry = 'x>-1e-6 & x<1e-6 & y>${fparse height-totalCut} & y<${fparse height-totalCut+cutIncrement}'
+    normal = '-1 0 0'
+    new_sideset_name = cutFaceRight
     input = gen
-    combinatorial_geometry = 'y>500e-6 & y<700e-6'
-    block_id = 2
-    block_name = 'midLayer'
   []
-  [bottomLeftNode]
-    type = BoundingBoxNodeSetGenerator
-    input = midLayer
-    new_boundary = 'bottomLeftNode'
-    bottom_left = '-1e-6 -1e-6 0'
-    top_right = '1e-6 1e-6 0'
+  [uncut]
+    type = ParsedGenerateSideset
+    combinatorial_geometry = 'x>-1e-6 & x<1e-6  & y>-1e-6 & y<${fparse height-totalCut}'
+    normal = '-1 0 0'
+    new_sideset_name = uncut
+    input = cutFaceRight
+  []
+[]
+
+[Problem]
+  extra_tag_vectors = 'ref'
+[]
+[AuxVariables]
+  [saved_x]
+  []
+  [saved_y]
+  []
+[]
+[AuxKernels]
+  [saved_x]
+    type = TagVectorAux
+    vector_tag = 'ref'
+    v = 'disp_x'
+    variable = 'saved_x'
+  []
+  [saved_y]
+    type = TagVectorAux
+    vector_tag = 'ref'
+    v = 'disp_y'
+    variable = 'saved_y'
   []
 []
 
@@ -48,6 +75,7 @@ xelems = '${fparse int(length/height)*yelems}'
     generate_output = 'stress_xx stress_yy stress_xy vonmises_stress'
     use_automatic_differentiation = true
     add_variables = true
+    extra_vector_tags = 'ref'
   []
 []
 
@@ -73,7 +101,7 @@ xelems = '${fparse int(length/height)*yelems}'
 [Functions]
   [bilayerT]
     type = ParsedFunction
-    expression ='if(y<=0.65e-3,100,-100)'
+    expression = 'if(y<=0.65e-3,100,-100)'
   []
 []
 
@@ -84,12 +112,12 @@ xelems = '${fparse int(length/height)*yelems}'
     variable = disp_x
     value = 0.0
   []
-  [right_x]
-    type = ADDirichletBC
-    boundary = right
-    variable = disp_x
-    value = 0.0
-  []
+  #  [right_x]
+  #    type = ADDirichletBC
+  #    boundary = right
+  #    variable = disp_x
+  #    value = 0.0
+  #  []
   [right_y]
     type = ADDirichletBC
     boundary = right
@@ -117,6 +145,12 @@ xelems = '${fparse int(length/height)*yelems}'
 []
 
 [VectorPostprocessors]
+  [symmetryNodesResidualForce]
+    type = NodalValueSampler
+    boundary = left
+    sort_by = y
+    variable = 'saved_x saved_y'
+  []
   [Nodes]
     type = NodalValueSampler
     sort_by = id

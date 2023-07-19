@@ -55,11 +55,11 @@ plt.tight_layout()
 
 fig=plt.figure()
 plt.plot(df_noCut['y']*1e3,df_noCut['stress_xx'],'-'\
-             ,linewidth=2,marker='*',label='stress_xx')
+             ,linewidth=2,marker='*',label='synthetic_stress_xx')
 plt.plot(df_noCut['y']*1e3,-df_noCut['inv_stress_xx'],'--'\
-             ,linewidth=2,marker='o',label='inv_stress_xx')
-plt.plot(df_invCut['y']*1e3,df_invCut['stress_xx'],'--'\
-             ,linewidth=1,marker='o',label='invForce_stress_xx')
+             ,linewidth=2,marker='o',label='inverted_stress_xx')
+# plt.plot(df_invCut['y']*1e3,df_invCut['stress_xx'],'--'\
+#              ,linewidth=1,marker='o',label='invForce_stress_xx')
 plt.ylabel("stress (MPa)")
 plt.xlabel("y_coord (mm)")
 plt.grid()

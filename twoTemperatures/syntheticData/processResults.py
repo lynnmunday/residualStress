@@ -31,6 +31,11 @@ for cut in cut_depth:
     name_yOut='cut_{:.2f}e-3_outputs/results_diff_y.csv'.format(cut)
     df.to_csv(name_yOut,index=False)
 
+    disp_max=df['diff_disp_y'].abs().max()
+    df_filtered = df[df['diff_disp_y'].abs() >= df['diff_disp_y'].abs().max()*.8];
+    name_yOut='cut_{:.2f}e-3_outputs/resultsFilter_diff_y.csv'.format(cut)
+    df_filtered.to_csv(name_yOut,index=False)
+
     df = pd.read_csv(name)
     df['weight_disp_x'] = 1e9
     df['weight_disp_y'] = 0
@@ -43,6 +48,11 @@ for cut in cut_depth:
     df['weighted_diff_disp_5noise']=df['weighted_diff_disp']+n
     name_xOut='cut_{:.2f}e-3_outputs/results_diff_x.csv'.format(cut)
     df.to_csv(name_xOut,index=False)
+
+    disp_max=df['diff_disp_x'].abs().max()
+    df_filtered = df[df['diff_disp_x'].abs() >= df['diff_disp_x'].abs().max()*.9];
+    name_yOut='cut_{:.2f}e-3_outputs/resultsFilter_diff_x.csv'.format(cut)
+    df_filtered.to_csv(name_yOut,index=False)
 
     df_output=pd.concat([df_output,df],ignore_index=True)
 

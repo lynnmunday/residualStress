@@ -5,7 +5,7 @@
 # everything is multiples of the height
 unitLength = 1.0e-3 #height
 cutIncrement = 0.05e-3
-totalCut = 0.9e-3
+totalCut = 0.05e-3
 
 height = ${unitLength}
 lengthMultiple = 0.5
@@ -71,12 +71,12 @@ xelems = '${fparse int(length/height)*yelems}'
     variable = disp_x
     value = 0.0
   []
-  [right_x]
-    type = ADDirichletBC
-    boundary = right
-    variable = disp_x
-    value = 0.0
-  []
+  # [right_x]
+  #   type = ADDirichletBC
+  #   boundary = right
+  #   variable = disp_x
+  #   value = 0.0
+  # []
   [right_y]
     type = ADDirichletBC
     boundary = right

@@ -1,4 +1,4 @@
-totalCut = 0.9e-3
+totalCut = 0.05e-3
 
 [Optimization]
 []
@@ -8,12 +8,12 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
   type = OptimizationReporter
   parameter_names = 'cutFaceForce'
   num_values = '2'
-  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/results_diff_x.csv'
+  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/resultsFilter_diff_x.csv'
   # initial_condition = '50000'
   file_xcoord = 'x'
   file_ycoord = 'y'
   file_zcoord = 'z'
-  file_value = 'weighted_diff_disp_2noise'
+  file_value = 'weighted_diff_disp'
   file_variable_weights = 'weight_disp_x'
 []
 [Executioner]
