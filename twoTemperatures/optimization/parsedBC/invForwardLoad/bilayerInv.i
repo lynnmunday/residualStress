@@ -1,13 +1,13 @@
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
-unitLength = 1.3e-3 #height
-totalCut = 1.2e-3
+unitLength = 1.0e-3 #height
+totalCut = 0.95e-3
 
 height = ${unitLength}
-lengthMultiple = 4
+lengthMultiple = 0.5
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 40
+yelems = 20
 xelems = '${fparse int(length/height)*yelems}'
 
 [Mesh]
@@ -61,12 +61,7 @@ xelems = '${fparse int(length/height)*yelems}'
 []
 
 [BCs]
-  [left_x]
-    type = ADDirichletBC
-    boundary = uncut
-    variable = disp_x
-    value = 0.0
-  []
+
   [right_x]
     type = ADDirichletBC
     boundary = right
@@ -104,7 +99,7 @@ xelems = '${fparse int(length/height)*yelems}'
   [dispy_ln_0]
     type = LineValueSampler
     start_point = '1e-6 ${fparse height-1e-6} 0'
-    end_point = '${fparse (lengthMultiple-1)*unitLength-1e-6} ${fparse height-1e-6} 0'
+    end_point = '${fparse 0.25*unitLength-1e-6} ${fparse height-1e-6} 0'
     num_points = 100
     sort_by = x
     variable = disp_y
@@ -120,23 +115,7 @@ xelems = '${fparse int(length/height)*yelems}'
   [sigxx_ln_1]
     type = LineValueSampler
     start_point = '${fparse 0.5*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 0.5*unitLength} 1e-6 0'
-    num_points = ${yelems}
-    sort_by = y
-    variable = stress_xx
-  []
-  [sigxx_ln_2]
-    type = LineValueSampler
-    start_point = '${fparse 0.75*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 0.75*unitLength} 1e-6 0'
-    num_points = ${yelems}
-    sort_by = y
-    variable = stress_xx
-  []
-  [sigxx_ln_3]
-    type = LineValueSampler
-    start_point = '${fparse 1.0*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 1.0*unitLength} 1e-6 0'
+    end_point = '${fparse 0.25*unitLength} 1e-6 0'
     num_points = ${yelems}
     sort_by = y
     variable = stress_xx
@@ -170,29 +149,40 @@ xelems = '${fparse int(length/height)*yelems}'
 
 [Functions]
 [invForce]
-  type = PiecewiseConstant
+  type = PiecewiseLinear
   axis = y
-  direction = right
-  xy_data='0.0001 -167406824.82859
-  0.0002 -609365604.5328
-  0.0003 -875700992.53647
-  0.0004 -1134870065.1419
-  0.0005 -1401280831.4933
-  0.0006 -1671534412.0804
-  0.0007 -1396079182.0423
-  0.0008 -1168006935.0171
-  0.0009 -829168479.37037
-  0.0010 -461514380.4633
-  0.0011 0
-  0.0012 550893457.92909'
+  xy_data='0.00005 1325917577.5092566
+  0.00010 1343984220.6842892
+  0.00015 1360734234.3523903
+  0.00020 1366026986.0251231
+  0.00025 1349814023.50262
+  0.00030 1307291116.1887987
+  0.00035 1231328300.6037915
+  0.00040 1118797529.6716714
+  0.00045 956136583.3515517
+  0.00050 728273748.4639912
+  0.00055 406623327.8043258
+  0.00060 -82980398.08663629
+  0.00065 -1036799582.8163102
+  0.00070 -1176376341.5248785
+  0.00075 -1200548475.3428147
+  0.00080 -1176268491.6322715
+  0.00085 -1073660029.9635339
+  0.00090 -828605731.0679295'
 []
 []
 
 [BCs]
   [invForce]
-    type = FunctionNeumannBC
+    type = ADFunctionNeumannBC
     variable = disp_x
-    boundary = cutFaceRight
+    boundary = cutFaceRight #left #cutFaceRight
     function = invForce
+  []
+  [left_x]
+    type = ADDirichletBC
+    boundary = uncut
+    variable = disp_x
+    value = 0.0
   []
 []

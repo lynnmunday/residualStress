@@ -3,15 +3,15 @@
 
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
-unitLength = 1.3e-3 #height
-cutIncrement = 0.1e-3
-totalCut = 1.2e-3
+unitLength = 1.0e-3 #height
+cutIncrement = 0.05e-3
+totalCut = 0.9e-3
 
 height = ${unitLength}
-lengthMultiple = 4
+lengthMultiple = 0.5
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 40
+yelems = 20
 xelems = '${fparse int(length/height)*yelems}'
 
 [Mesh]
@@ -124,32 +124,32 @@ xelems = '${fparse int(length/height)*yelems}'
 [DiracKernels]
   [adjointLoad_y]
     type = ReporterPointSource
-    variable = disp_y
+    variable = disp_x
     x_coord_name = misfit/measurement_xcoord
     y_coord_name = misfit/measurement_ycoord
     z_coord_name = misfit/measurement_zcoord
     value_name = misfit/misfit_values
-    weight_name = misfit/weight_disp_y
+    weight_name = misfit/weight_disp_x
   []
 []
 
 [Reporters]
   [misfit]
     type = OptimizationData
-    variable_weight_names = 'weight_disp_y'
+    variable_weight_names = 'weight_disp_x'
   []
   [params_cutFace]
     type = ConstantReporter
     real_vector_names = 'cutFaceForce'
-    real_vector_values = '0' # Dummy
+    real_vector_values = '0 0' # Dummy
   []
 []
 
 [Functions]
   [cutFaceRight_function]
     type = ParsedOptimizationFunction
-    expression = 'a'
-    param_symbol_names = 'a'
+    expression = 'a + b*y'
+    param_symbol_names = 'a b'
     param_vector_name = 'params_cutFace/cutFaceForce'
   []
 []

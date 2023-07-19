@@ -1,4 +1,4 @@
-totalCut = 0.40e-3
+totalCut = 0.9e-3
 
 [Optimization]
 []
@@ -7,14 +7,14 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
 [OptimizationReporter]
   type = OptimizationReporter
   parameter_names = 'cutFaceForce'
-  num_values = '1'
-  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/results_diff_y.csv'
+  num_values = '2'
+  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/results_diff_x.csv'
   # initial_condition = '50000'
   file_xcoord = 'x'
   file_ycoord = 'y'
   file_zcoord = 'z'
-  file_value = 'weighted_diff_disp'
-  file_variable_weights = 'weight_disp_y'
+  file_value = 'weighted_diff_disp_2noise'
+  file_variable_weights = 'weight_disp_x'
 []
 [Executioner]
   type = Optimize
@@ -22,15 +22,15 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
   ##--Hessian
   tao_solver = taonls
   petsc_options_iname = '-tao_grtol -tao_gatol -tao_nls_pc_type -tao_nls_ksp_type'
-  petsc_options_value = '1e-16 1e-5 none cg'
+  petsc_options_value = '1e-30 1e-6 none cg'
   ##--gradient
   # tao_solver = taobncg
   # petsc_options_iname = '-tao_gatol -tao_ls_type'
   # petsc_options_value = '1e-7 unit'
   ##--finite difference testing
   # tao_solver = taobncg
-  # petsc_options_iname = '-tao_max_it -tao_fd_test -tao_test_gradient -tao_fd_gradient -tao_fd_delta'
-  # petsc_options_value = '1 true true false 1e-5'
+  # petsc_options_iname = '-tao_max_it -tao_grtol -tao_fd_test -tao_test_gradient -tao_fd_gradient -tao_fd_delta'
+  # petsc_options_value = '1 1e-20 true true false 1e-1'
   # petsc_options = '-tao_test_gradient_view'
 []
 
@@ -64,14 +64,14 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
                       OptimizationReporter/measurement_zcoord
                       OptimizationReporter/measurement_time
                       OptimizationReporter/measurement_values
-                      OptimizationReporter/weight_disp_y
+                      OptimizationReporter/weight_disp_x
                       OptimizationReporter/cutFaceForce'
     to_reporters = 'measure_data/measurement_xcoord
                     measure_data/measurement_ycoord
                     measure_data/measurement_zcoord
                     measure_data/measurement_time
                     measure_data/measurement_values
-                    measure_data/weight_disp_y
+                    measure_data/weight_disp_x
                     params_cutFace/cutFaceForce'
   []
   [fromForward]
@@ -88,14 +88,14 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
                       OptimizationReporter/measurement_zcoord
                       OptimizationReporter/measurement_time
                       OptimizationReporter/misfit_values
-                      OptimizationReporter/weight_disp_y
+                      OptimizationReporter/weight_disp_x
                       OptimizationReporter/cutFaceForce'
     to_reporters = 'misfit/measurement_xcoord
                     misfit/measurement_ycoord
                     misfit/measurement_zcoord
                     misfit/measurement_time
                     misfit/misfit_values
-                    misfit/weight_disp_y
+                    misfit/weight_disp_x
                     params_cutFace/cutFaceForce'
   []
   [fromadjoint]
@@ -113,14 +113,14 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
                         OptimizationReporter/measurement_zcoord
                         OptimizationReporter/measurement_time
                         OptimizationReporter/measurement_values
-                        OptimizationReporter/weight_disp_y
+                        OptimizationReporter/weight_disp_x
                         OptimizationReporter/cutFaceForce'
     to_reporters = 'measure_data/measurement_xcoord
                       measure_data/measurement_ycoord
                       measure_data/measurement_zcoord
                       measure_data/measurement_time
                       measure_data/measurement_values
-                      measure_data/weight_disp_y
+                      measure_data/weight_disp_x
                       params_cutFace/cutFaceForce'
   []
   [fromHomogeneousForward]

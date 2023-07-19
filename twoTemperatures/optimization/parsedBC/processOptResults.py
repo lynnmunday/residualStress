@@ -9,7 +9,7 @@ df_invCut = pd.read_csv(base_dir+'optimization/parsedBC/invForwardLoad/bilayerIn
 df_noCut = pd.read_csv(base_dir+'syntheticData/cut_0.0e-3_outputs/results_sigxx_ln_0_0001.csv')
 print('\nColumn Names: \n',df_noCut.columns.values)
 
-cut_depth=np.arange(0.1,1.3,0.1)
+cut_depth=np.arange(0.95,0.05,-0.05)
 df_noCut['inv_stress_xx']=0
 for cut in cut_depth:
     results_dir='cut_{:.2f}e-3_outputs/'.format(cut)
@@ -28,15 +28,22 @@ for cut in cut_depth:
     df = pd.read_csv(name)
     # print('cut= ',cut)
     # print('df= ',df['cutFaceForce'])
-    force.append(-df['cutFaceForce'].iloc[-1])
-    xy_data='{:.4f}'.format(cut*1e-3) + ' ' + str(-df['cutFaceForce'].iloc[-1])
+    # piecewise linear output.  This data is a+by
+    # evaluate in the middle of the cut
+    force.append(-df['cutFaceForce'].iloc[0])
+    a=df['cutFaceForce'].iloc[0]
+    b=df['cutFaceForce'].iloc[1]
+    y=(1-cut)*1e-3
+    val=a+b*y
+    xy_data='{:.5f}'.format((1-cut)*1e-3) + ' ' + str(-val)
     print(xy_data)
+
 
 print("force=",force)
 fig=plt.figure()
 y_coord=np.flip(cut_depth)
 plt.plot(y_coord,force,'-'\
-             ,linewidth=2,marker='*',label='stress_xx')
+             ,linewidth=2,marker='*',label='force_x')
 plt.ylabel("Force (N)")
 plt.xlabel("y_coord (mm)")
 plt.grid()

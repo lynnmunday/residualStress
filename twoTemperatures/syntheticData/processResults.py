@@ -28,9 +28,8 @@ for cut in cut_depth:
     n = np.random.normal(0, df['weighted_diff_disp'].std(), df.shape[0]) * noise_percentage_05
     df['weighted_diff_disp_5noise']=df['weighted_diff_disp']+n
     df_output=pd.concat([df_output,df],ignore_index=True)
-
     name_yOut='cut_{:.2f}e-3_outputs/results_diff_y.csv'.format(cut)
-    df_output.to_csv(name_yOut,index=False)
+    df.to_csv(name_yOut,index=False)
 
     df = pd.read_csv(name)
     df['weight_disp_x'] = 1e9
@@ -42,6 +41,9 @@ for cut in cut_depth:
     df['weighted_diff_disp_2noise']=df['weighted_diff_disp']+n
     n = np.random.normal(0, df['weighted_diff_disp'].std(), df.shape[0]) * noise_percentage_05
     df['weighted_diff_disp_5noise']=df['weighted_diff_disp']+n
+    name_xOut='cut_{:.2f}e-3_outputs/results_diff_x.csv'.format(cut)
+    df.to_csv(name_xOut,index=False)
+
     df_output=pd.concat([df_output,df],ignore_index=True)
 
     name_AllOut='cut_{:.2f}e-3_outputs/results_diff.csv'.format(cut)

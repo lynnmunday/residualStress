@@ -13,7 +13,7 @@ def remove_csv_data(dataDir):
                 os.remove(path)
 #-------------------------------------------------------------------------------
 
-cut_depth=np.arange(0.1,1.3,0.1)
+cut_depth=np.arange(0.05,1.0,0.05)
 isopod_opt="/Users/mundlb/projects/isopod/isopod-opt"
 input_file = "bilayer_main.i"
 n_cores=2
