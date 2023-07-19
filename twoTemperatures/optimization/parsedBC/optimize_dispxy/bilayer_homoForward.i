@@ -1,17 +1,12 @@
-#--------------------------------------------------------------------------#
-#     layered plate mesh
-
-# Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
-# everything is multiples of the height
-unitLength = 1.3e-3 #height
-cutIncrement = 0.1e-3
-totalCut = 1.2e-3
+unitLength = 1.0e-3 #height
+cutIncrement = 0.05e-3
+totalCut = 0.05e-3
 
 height = ${unitLength}
-lengthMultiple = 4
+lengthMultiple = 0.5
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 40
+yelems = 20
 xelems = '${fparse int(length/height)*yelems}'
 
 [Mesh]

@@ -1,4 +1,4 @@
-totalCut = 0.40e-3
+totalCut = 0.05e-3
 
 [Optimization]
 []
@@ -8,7 +8,7 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
   type = OptimizationReporter
   parameter_names = 'cutFaceForce'
   num_values = '1'
-  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/results_diff.csv'
+  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/resultsFilter_diff.csv'
   # initial_condition = '50000'
   file_xcoord = 'x'
   file_ycoord = 'y'
@@ -30,7 +30,7 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
   ##--finite difference testing
   tao_solver = taobncg
   petsc_options_iname = '-tao_max_it -tao_fd_test -tao_test_gradient -tao_fd_gradient -tao_fd_delta'
-  petsc_options_value = '1 true true false 1e-2'
+  petsc_options_value = '1 true true false 1e-6'
   petsc_options = '-tao_test_gradient_view'
 []
 
