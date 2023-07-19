@@ -1,14 +1,17 @@
+#--------------------------------------------------------------------------#
+#     layered plate mesh
+
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
-unitLength = 1.0e-3 #height
-cutIncrement = 0.5e-3
-totalCut = 0.4e-3
+unitLength = 1.3e-3 #height
+cutIncrement = 0.1e-3
+totalCut = 1.2e-3
 
 height = ${unitLength}
-lengthMultiple = 0.5
+lengthMultiple = 4
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 20
+yelems = 40
 xelems = '${fparse int(length/height)*yelems}'
 
 [Mesh]
@@ -48,7 +51,6 @@ xelems = '${fparse int(length/height)*yelems}'
 [Modules/TensorMechanics/Master]
   [all]
     strain = SMALL
-    eigenstrain_names = 'eigenstrain'
     generate_output = 'stress_xx stress_yy stress_xy'
     use_automatic_differentiation = true
     add_variables = true
@@ -59,25 +61,6 @@ xelems = '${fparse int(length/height)*yelems}'
   [disp_x]
   []
   [disp_y]
-  []
-[]
-
-[AuxVariables]
-  [T]
-  []
-[]
-
-[ICs]
-  [T_ic]
-    type = FunctionIC
-    variable = 'T'
-    function = bilayerT
-  []
-[]
-[Functions]
-  [bilayerT]
-    type = ParsedFunction
-    expression ='if(y<=0.65e-3,100,-100)'
   []
 []
 
@@ -111,54 +94,6 @@ xelems = '${fparse int(length/height)*yelems}'
   [stress]
     type = ADComputeLinearElasticStress
   []
-
-  [outsideThermalStrain_Al]
-    type = ADComputeThermalExpansionEigenstrain
-    temperature = T
-    thermal_expansion_coeff = 25.1e-6 #Al6061ThermalExpansionEigenstrain T=300
-    stress_free_temperature = 0
-    eigenstrain_name = eigenstrain
-  []
-[]
-
-[VectorPostprocessors]
-  [Nodes]
-    type = NodalValueSampler
-    sort_by = id
-    variable = 'disp_x disp_y'
-  []
-  [dispy_ln_all]
-    type = LineValueSampler
-    start_point = '1e-6 ${fparse height-1e-6} 0'
-    end_point = '${fparse length-1e-6} ${fparse height-1e-6} 0'
-    num_points = 100
-    sort_by = x
-    variable = disp_y
-  []
-  [dispy_ln_0]
-    type = LineValueSampler
-    start_point = '1e-6 ${fparse height-1e-6} 0'
-    end_point = '${fparse 0.25*unitLength-1e-6} ${fparse height-1e-6} 0'
-    num_points = 100
-    sort_by = x
-    variable = disp_y
-  []
-  [sigxx_ln_0]
-    type = LineValueSampler
-    start_point = '1e-6 ${fparse height-1e-6} 0'
-    end_point = '1e-6 1e-6 0'
-    num_points = ${yelems}
-    sort_by = y
-    variable = stress_xx
-  []
-  [sigxx_ln_1]
-    type = LineValueSampler
-    start_point = '${fparse 0.5*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 0.25*unitLength} 1e-6 0'
-    num_points = ${yelems}
-    sort_by = y
-    variable = stress_xx
-  []
 []
 
 [Executioner]
@@ -178,10 +113,52 @@ xelems = '${fparse int(length/height)*yelems}'
   nl_abs_tol = 1e-9
 []
 
-##############################################################
 [Outputs]
-  file_base = cut_${totalCut}_outputs/results
-  csv = true
-  execute_on = 'TIMESTEP_END'
+  file_base = 'cut_${totalCut}_outputs/adjoint'
+  csv = false
   exodus = true
+[]
+
+##---------Optimization stuff------------------#
+
+[DiracKernels]
+  [adjointLoad_y]
+    type = ReporterPointSource
+    variable = disp_y
+    x_coord_name = misfit/measurement_xcoord
+    y_coord_name = misfit/measurement_ycoord
+    z_coord_name = misfit/measurement_zcoord
+    value_name = misfit/misfit_values
+    weight_name = misfit/weight_disp_y
+  []
+[]
+
+[Reporters]
+  [misfit]
+    type = OptimizationData
+    variable_weight_names = 'weight_disp_y'
+  []
+  [params_cutFace]
+    type = ConstantReporter
+    real_vector_names = 'cutFaceForce'
+    real_vector_values = '0' # Dummy
+  []
+[]
+
+[Functions]
+  [cutFaceRight_function]
+    type = ParsedOptimizationFunction
+    expression = 'a'
+    param_symbol_names = 'a'
+    param_vector_name = 'params_cutFace/cutFaceForce'
+  []
+[]
+
+[VectorPostprocessors]
+  [grad_bc_cutFace]
+    type = SideOptimizationNeumannFunctionInnerProduct
+    variable = disp_x
+    function = cutFaceRight_function
+    boundary = cutFaceRight
+  []
 []

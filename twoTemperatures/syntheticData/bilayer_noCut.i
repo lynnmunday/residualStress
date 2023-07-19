@@ -1,13 +1,12 @@
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
-unitLength = 1.3e-3 #height
-cutHalfWidth = 0.4e-3 # this is the half
+unitLength = 1.0e-3 #height
 
 height = ${unitLength}
-lengthMultiple = 4
+lengthMultiple = 0.5
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 40
+yelems = 20
 xelems = '${fparse int(length/height)*yelems}'
 
 [GlobalParams]
@@ -125,7 +124,7 @@ xelems = '${fparse int(length/height)*yelems}'
   []
   [dispy_ln_all]
     type = LineValueSampler
-    start_point = '${fparse cutHalfWidth+1e-6} ${fparse height-1e-6} 0'
+    start_point = '1e-6 ${fparse height-1e-6} 0'
     end_point = '${fparse length-1e-6} ${fparse height-1e-6} 0'
     num_points = 100
     sort_by = x
@@ -133,16 +132,16 @@ xelems = '${fparse int(length/height)*yelems}'
   []
   [dispy_ln_0]
     type = LineValueSampler
-    start_point = '${fparse cutHalfWidth+1e-6} ${fparse height-1e-6} 0'
-    end_point = '${fparse (lengthMultiple-1)*unitLength-1e-6} ${fparse height-1e-6} 0'
+    start_point = '1e-6 ${fparse height-1e-6} 0'
+    end_point = '${fparse 0.25*unitLength-1e-6} ${fparse height-1e-6} 0'
     num_points = 100
     sort_by = x
     variable = disp_y
   []
   [sigxx_ln_0]
     type = LineValueSampler
-    start_point = '${fparse cutHalfWidth+1e-6} ${fparse height-1e-6} 0'
-    end_point = '${fparse cutHalfWidth+1e-6} 1e-6 0'
+    start_point = '1e-6 ${fparse height-1e-6} 0'
+    end_point = '1e-6 1e-6 0'
     num_points = ${yelems}
     sort_by = y
     variable = stress_xx
@@ -150,23 +149,7 @@ xelems = '${fparse int(length/height)*yelems}'
   [sigxx_ln_1]
     type = LineValueSampler
     start_point = '${fparse 0.5*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 0.5*unitLength} 1e-6 0'
-    num_points = ${yelems}
-    sort_by = y
-    variable = stress_xx
-  []
-  [sigxx_ln_2]
-    type = LineValueSampler
-    start_point = '${fparse 0.75*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 0.75*unitLength} 1e-6 0'
-    num_points = ${yelems}
-    sort_by = y
-    variable = stress_xx
-  []
-  [sigxx_ln_3]
-    type = LineValueSampler
-    start_point = '${fparse 1.0*unitLength} ${fparse height-1e-6} 0'
-    end_point = '${fparse 1.0*unitLength} 1e-6 0'
+    end_point = '${fparse 0.25*unitLength} 1e-6 0'
     num_points = ${yelems}
     sort_by = y
     variable = stress_xx
