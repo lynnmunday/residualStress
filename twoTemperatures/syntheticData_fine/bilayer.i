@@ -1,5 +1,7 @@
+# Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
+# everything is multiples of the height
 unitLength = 1.0e-3 #height
-totalCut = 0.9e-3
+totalCut = 0.95e-3
 
 height = ${unitLength}
 lengthMultiple = 0.5
@@ -21,19 +23,12 @@ xelems = '${fparse int(length/height)*yelems}'
     elem_type = QUAD4
   []
   #######------CUT-------#######
-  [cutFaceRight]
-    type = ParsedGenerateSideset
-    combinatorial_geometry = 'x>-1e-6 & x<1e-6 & y>${fparse height-totalCut} & y<${fparse height}'
-    normal = '-1 0 0'
-    new_sideset_name = cutFaceRight
-    input = gen
-  []
   [uncut]
     type = ParsedGenerateSideset
     combinatorial_geometry = 'x>-1e-6 & x<1e-6  & y>-1e-6 & y<${fparse height-totalCut}'
     normal = '-1 0 0'
     new_sideset_name = uncut
-    input = cutFaceRight
+    input = gen
   []
 []
 #--------------------------------------------------------------------------#
@@ -42,12 +37,38 @@ xelems = '${fparse int(length/height)*yelems}'
   displacements = 'disp_x disp_y'
 []
 
+[Problem]
+  extra_tag_vectors = 'ref'
+[]
+[AuxVariables]
+  [saved_x]
+  []
+  [saved_y]
+  []
+[]
+[AuxKernels]
+  [saved_x]
+    type = TagVectorAux
+    vector_tag = 'ref'
+    v = 'disp_x'
+    variable = 'saved_x'
+  []
+  [saved_y]
+    type = TagVectorAux
+    vector_tag = 'ref'
+    v = 'disp_y'
+    variable = 'saved_y'
+  []
+[]
+
 [Modules/TensorMechanics/Master]
   [all]
     strain = SMALL
-    generate_output = 'stress_xx stress_yy'
+    eigenstrain_names = 'eigenstrain'
+    generate_output = 'stress_xx stress_yy stress_xy'
     use_automatic_differentiation = true
     add_variables = true
+    extra_vector_tags = 'ref'
   []
 []
 
@@ -55,6 +76,25 @@ xelems = '${fparse int(length/height)*yelems}'
   [disp_x]
   []
   [disp_y]
+  []
+[]
+
+[AuxVariables]
+  [T]
+  []
+[]
+
+[ICs]
+  [T_ic]
+    type = FunctionIC
+    variable = 'T'
+    function = bilayerT
+  []
+[]
+[Functions]
+  [bilayerT]
+    type = ParsedFunction
+    expression = 'if(y<=0.65e-3,100,-100)'
   []
 []
 
@@ -88,67 +128,28 @@ xelems = '${fparse int(length/height)*yelems}'
   [stress]
     type = ADComputeLinearElasticStress
   []
-[]
 
-[Executioner]
-  type = Steady
-
-  solve_type = 'NEWTON'
-  petsc_options_iname = '-ksp_type -pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'preonly    lu       superlu_dist'
-
-  line_search = 'none'
-
-  l_max_its = 100
-  l_tol = 1e-2
-
-  nl_max_its = 15
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-9
-[]
-
-##---------Optimization stuff------------------#
-
-[Reporters]
-  [measure_data]
-    type = OptimizationData
-    variable = 'disp_x'
-    variable_weight_names = 'weight_disp_x'
+  [outsideThermalStrain_Al]
+    type = ADComputeThermalExpansionEigenstrain
+    temperature = T
+    thermal_expansion_coeff = 25.1e-6 #Al6061ThermalExpansionEigenstrain T=300
+    stress_free_temperature = 0
+    eigenstrain_name = eigenstrain
   []
-  [params_cutFace]
-    type = ConstantReporter
-    real_vector_names = 'source'
-    real_vector_values = '0' # Dummy
-  []
-[]
-
-[Functions]
-  [cutFaceRight_function]
-    type = ParameterMeshFunction
-    exodus_mesh = parameter_mesh_in.e
-    family = LAGRANGE # MONOMIAL
-    order = FIRST # CONSTANT
-    parameter_name = params_cutFace/source
-  []
-[]
-
-[BCs]
-  [cutFaceRight]
-    type = ADFunctionNeumannBC
-    variable = 'disp_x'
-    boundary = cutFaceRight
-    function = cutFaceRight_function
-  []
-[]
-##--------- Outputs ------------------#
-
-[Outputs]
-  file_base = 'cut_${totalCut}_outputs/forward'
-  csv = true
-  exodus = true
 []
 
 [VectorPostprocessors]
+  [symmetryNodesResidualForce]
+    type = NodalValueSampler
+    boundary = left
+    sort_by = y
+    variable = 'saved_x saved_y'
+  []
+  [Nodes]
+    type = NodalValueSampler
+    sort_by = id
+    variable = 'disp_x disp_y'
+  []
   [dispy_ln_all]
     type = LineValueSampler
     start_point = '1e-6 ${fparse height-1e-6} 0'
@@ -181,4 +182,29 @@ xelems = '${fparse int(length/height)*yelems}'
     sort_by = y
     variable = stress_xx
   []
+[]
+
+[Executioner]
+  type = Steady
+
+  solve_type = 'NEWTON'
+  petsc_options_iname = '-ksp_type -pc_type -pc_factor_mat_solver_package'
+  petsc_options_value = 'preonly    lu       superlu_dist'
+
+  line_search = 'none'
+
+  l_max_its = 100
+  l_tol = 1e-2
+
+  nl_max_its = 15
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-9
+[]
+
+##############################################################
+[Outputs]
+  file_base = cut_${totalCut}_outputs/results
+  csv = true
+  execute_on = 'TIMESTEP_END'
+  exodus = true
 []

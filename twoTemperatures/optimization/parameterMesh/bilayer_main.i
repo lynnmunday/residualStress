@@ -3,12 +3,14 @@ totalCut = 0.90e-3
 [Optimization]
 []
 
-measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTemperatures/syntheticData'
+measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTemperatures/syntheticData_fine/'
 [OptimizationReporter]
   type = ParameterMeshOptimization
   parameter_names = 'source'
   parameter_meshes = 'parameter_mesh_in.e'
-  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/singleCutResults_diff_x.csv'
+  parameter_families = 'LAGRANGE' #MONOMIAL
+  parameter_orders = 'FIRST' #CONSTANT
+  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/singleCutResults_diff_x.csv' #singleCutResultsFilter_diff_x.csv'
   # initial_condition = '50000'
   file_xcoord = 'x'
   file_ycoord = 'y'
@@ -22,15 +24,19 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTempera
   ##--Hessian
   tao_solver = taonls
   petsc_options_iname = '-tao_grtol -tao_gatol -tao_nls_pc_type -tao_nls_ksp_type'
-  petsc_options_value = '1e-16 2e-5 none cg'
-  ##--gradient
+  petsc_options_value = '1e-16 3e-5 none cg'
+  ##--gradient lmvm
+  # tao_solver = taolmvm
+  # petsc_options_iname = '-tao_gttol -tao_grtol'
+  # petsc_options_value = ' 1e-5 1e-16'
+  ##--gradient cg
   # tao_solver = taobncg
   # petsc_options_iname = '-tao_gatol -tao_ls_type'
   # petsc_options_value = '1e-7 unit'
   ##--finite difference testing
   # tao_solver = taobncg
   # petsc_options_iname = '-tao_max_it -tao_fd_test -tao_test_gradient -tao_fd_gradient -tao_fd_delta'
-  # petsc_options_value = '1 true true false 1e2'
+  # petsc_options_value = '1 true true false 1e-3'
   # petsc_options = '-tao_test_gradient_view'
 []
 

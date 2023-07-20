@@ -5,7 +5,7 @@ height = ${unitLength}
 lengthMultiple = 0.5
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 20
+yelems = 40
 xelems = '${fparse int(length/height)*yelems}'
 
 [Mesh]
@@ -65,12 +65,12 @@ xelems = '${fparse int(length/height)*yelems}'
     variable = disp_x
     value = 0.0
   []
-  # [right_x]
-  #   type = ADDirichletBC
-  #   boundary = right
-  #   variable = disp_x
-  #   value = 0.0
-  # []
+  [right_x]
+    type = ADDirichletBC
+    boundary = right
+    variable = disp_x
+    value = 0.0
+  []
   [right_y]
     type = ADDirichletBC
     boundary = right
@@ -131,6 +131,8 @@ xelems = '${fparse int(length/height)*yelems}'
   [cutFaceRight_function]
     type = ParameterMeshFunction
     exodus_mesh = parameter_mesh_in.e
+    family = LAGRANGE # MONOMIAL
+    order = FIRST # CONSTANT
     parameter_name = params_cutFace/source
   []
 []
