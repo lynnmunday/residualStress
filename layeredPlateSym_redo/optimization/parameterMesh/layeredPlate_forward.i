@@ -1,6 +1,6 @@
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
-unitLength = 1.3e-3 #height
+unitLength = 1.2e-3 #height
 totalCut = 0.60e-3
 cutHalfWidth = 0.4e-3 # this is the half
 
@@ -8,7 +8,7 @@ height = ${unitLength}
 lengthMultiple = 2
 length = '${fparse lengthMultiple*unitLength}'
 
-yelems = 52
+yelems = 48
 xelems = '${fparse int(length/height)*yelems}'
 
 [Mesh]
@@ -26,7 +26,7 @@ xelems = '${fparse int(length/height)*yelems}'
   [midLayer]
     type = ParsedSubdomainMeshGenerator
     input = gen
-    combinatorial_geometry = 'y>500e-6 & y<700e-6'
+    combinatorial_geometry = 'y>400e-6 & y<700e-6'
     block_id = 2
     block_name = 'midLayer'
   []
@@ -150,7 +150,7 @@ xelems = '${fparse int(length/height)*yelems}'
 [Functions]
   [cutFaceRight_function]
     type = ParameterMeshFunction
-    exodus_mesh = parameter_mesh_in.e
+    exodus_mesh = 'parameter_mesh_in_${totalCut}.e'
     family = LAGRANGE # MONOMIAL
     order = FIRST # CONSTANT
     parameter_name = params_cutFace/source

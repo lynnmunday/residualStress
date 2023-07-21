@@ -7,7 +7,7 @@ measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/layeredPla
 [OptimizationReporter]
   type = ParameterMeshOptimization
   parameter_names = 'source'
-  parameter_meshes = 'parameter_mesh_in.e'
+  parameter_meshes = 'parameter_mesh_in_${totalCut}.e'
   parameter_families = 'LAGRANGE' #MONOMIAL
   parameter_orders = 'FIRST' #CONSTANT
   measurement_file = '${measurementDir}/cut_${totalCut}_outputs/singleCutResultsFilter_top_diff_y.csv'

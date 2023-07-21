@@ -1,8 +1,7 @@
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
 unitLength = 1.3e-3 #height
-totalCut = 0.60e-3
-cutHalfWidth = 0.4e-3 # this is the half
+totalCut = 1.2e-3
 
 height = ${unitLength}
 lengthMultiple = 2
@@ -38,30 +37,19 @@ xelems = '${fparse int(length/height)*yelems}'
     top_right = '1e-6 1e-6 0'
   []
   #######------CUT-------#######
-  [cut]
-    type = ParsedSubdomainMeshGenerator
+  [cutFaceRight]
+    type = ParsedGenerateSideset
+    combinatorial_geometry = 'x>-1e-6 & x<1e-6 & y>${fparse height-totalCut} & y<${fparse height}'
+    normal = '-1 0 0'
+    new_sideset_name = cutFaceRight
     input = bottomLeftNode
-    combinatorial_geometry = 'x>0 & x<${cutHalfWidth} & y>${fparse height-totalCut}'
-    block_id = 99
-  []
-  [del]
-    type = BlockDeletionGenerator
-    input = cut
-    block = '99'
   []
   [uncut]
     type = ParsedGenerateSideset
     combinatorial_geometry = 'x>-1e-6 & x<1e-6  & y>-1e-6 & y<${fparse height-totalCut}'
     normal = '-1 0 0'
     new_sideset_name = uncut
-    input = del
-  []
-  [cutFaceRight]
-    type = ParsedGenerateSideset
-    combinatorial_geometry = 'x>${fparse cutHalfWidth-1e-6} & x<${fparse cutHalfWidth+1e-6} & y>${fparse height-totalCut} & y<${fparse height}'
-    normal = '-1 0 0'
-    new_sideset_name = cutFaceRight
-    input = uncut
+    input = cutFaceRight
   []
 []
 #--------------------------------------------------------------------------#
@@ -73,7 +61,7 @@ xelems = '${fparse int(length/height)*yelems}'
 [Modules/TensorMechanics/Master]
   [all]
     strain = SMALL
-    generate_output = 'stress_xx stress_yy stress_xy'
+    generate_output = 'stress_xx stress_yy'
     use_automatic_differentiation = true
     add_variables = true
   []
@@ -83,6 +71,12 @@ xelems = '${fparse int(length/height)*yelems}'
   [disp_x]
   []
   [disp_y]
+  []
+[]
+
+[AuxVariables]
+  [T]
+    initial_condition = -100
   []
 []
 
@@ -116,6 +110,22 @@ xelems = '${fparse int(length/height)*yelems}'
   []
   [stress]
     type = ADComputeLinearElasticStress
+  []
+  [outsideThermalStrain_Al]
+    type = ADComputeThermalExpansionEigenstrain
+    temperature = T
+    thermal_expansion_coeff = 25.1e-6 #Al6061ThermalExpansionEigenstrain T=300
+    stress_free_temperature = 0
+    eigenstrain_name = eigenstrain
+    block = 0
+  []
+  [middleThermalStrain_U10Mo]
+    type = ADComputeThermalExpansionEigenstrain
+    temperature = T
+    thermal_expansion_coeff = 15e-6 #U10MoThermalExpansionEigenstrain - Burkes  T=300
+    stress_free_temperature = 0
+    eigenstrain_name = eigenstrain
+    block = 2
   []
 []
 
@@ -155,7 +165,7 @@ xelems = '${fparse int(length/height)*yelems}'
 [Functions]
   [cutFaceRight_function]
     type = ParameterMeshFunction
-    exodus_mesh = parameter_mesh_in.e
+    exodus_mesh = 'parameter_mesh_in_${totalCut}.e'
     family = LAGRANGE # MONOMIAL
     order = FIRST # CONSTANT
     parameter_name = params_cutFace/source

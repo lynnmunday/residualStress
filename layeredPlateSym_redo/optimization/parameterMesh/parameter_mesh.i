@@ -1,8 +1,10 @@
 # Width=25.4mm x Length=101.6mm x thickness=1.24mm -- 3.18mm Al-Al crimp around ouside
 # everything is multiples of the height
 unitLength = 1.3e-3 #height
-totalCut = 0.70e-3
+totalCut = 0.80e-3
 cutHalfWidth = 0.4e-3 # this is the half
+
+xelems = '${fparse int(totalCut/0.05e-3)}'
 
 height = ${unitLength}
 
@@ -12,7 +14,7 @@ height = ${unitLength}
   [line]
     type = GeneratedMeshGenerator
     dim = 1
-    nx = 10
+    nx = ${xelems}
     xmin = 0
     xmax = ${totalCut}
   []

@@ -135,6 +135,27 @@ xelems = '${fparse int(length/height)*yelems}'
   []
 []
 
+[Executioner]
+  type = Steady
+  solve_type = 'NEWTON'
+  petsc_options_iname = '-ksp_type -pc_type -pc_factor_mat_solver_package'
+  petsc_options_value = 'preonly    lu       superlu_dist'
+  line_search = 'none'
+  l_max_its = 100
+  l_tol = 1e-2
+  nl_max_its = 15
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-9
+[]
+
+##############################################################
+[Outputs]
+  file_base = cut_${totalCut}_outputs/results
+  csv = true
+  execute_on = 'TIMESTEP_END'
+  exodus = true
+[]
+
 [VectorPostprocessors]
   [Nodes]
     type = NodalValueSampler
@@ -165,25 +186,4 @@ xelems = '${fparse int(length/height)*yelems}'
     sort_by = y
     variable = stress_xx
   []
-[]
-
-[Executioner]
-  type = Steady
-  solve_type = 'NEWTON'
-  petsc_options_iname = '-ksp_type -pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'preonly    lu       superlu_dist'
-  line_search = 'none'
-  l_max_its = 100
-  l_tol = 1e-2
-  nl_max_its = 15
-  nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-9
-[]
-
-##############################################################
-[Outputs]
-  file_base = cut_${totalCut}_outputs/results
-  csv = true
-  execute_on = 'TIMESTEP_END'
-  exodus = true
 []
