@@ -9,20 +9,32 @@ base_dir='/Users/mundlb/projects/isopod_inputs/residualStress/twoTemperatures/'
 df_noCut = pd.read_csv(base_dir+'syntheticData_fine/cut_0.0e-3_outputs/results_sigxx_ln_0_0001.csv')
 print('\nColumn Names: \n',df_noCut.columns.values)
 
-df_noise0 = pd.read_csv('cut_0.90e-3_noise0/forward_sigxx_ln_0_0001.csv')
-df_noise1 = pd.read_csv('cut_0.90e-3_noise1/forward_sigxx_ln_0_0001.csv')
-df_noise5 = pd.read_csv('cut_0.90e-3_noise5/forward_sigxx_ln_0_0001.csv')
-df_noise10 = pd.read_csv('cut_0.90e-3_noise10/forward_sigxx_ln_0_0001.csv')
-df_bias_noise0 = pd.read_csv('cut_0.90e-3_bias_noise0/forward_sigxx_ln_0_0001.csv')
-df_bias_noise1 = pd.read_csv('cut_0.90e-3_bias_noise1/forward_sigxx_ln_0_0001.csv')
-df_bias_noise5 = pd.read_csv('cut_0.90e-3_bias_noise5/forward_sigxx_ln_0_0001.csv')
-df_bias_noise10 = pd.read_csv('cut_0.90e-3_bias_noise10/forward_sigxx_ln_0_0001.csv')
-df = pd.read_csv('cut_0.90e-3_outputs/forward_sigxx_ln_0_0001.csv')
-# df_noCut['inv_stress_xx']=df_noCut['inv_stress_xx']+df['stress_xx']
+cut=0.9 #cut depth to plot
+height=1.0 #overall height
+
+df_noise0 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_noise0/forward_sigxx_ln_0_0001.csv')
+df_noise1 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_noise1/forward_sigxx_ln_0_0001.csv')
+df_noise5 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_noise5/forward_sigxx_ln_0_0001.csv')
+df_noise10 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_noise10/forward_sigxx_ln_0_0001.csv')
+df_bias_noise0 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_bias_noise0/forward_sigxx_ln_0_0001.csv')
+df_bias_noise1 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_bias_noise1/forward_sigxx_ln_0_0001.csv')
+df_bias_noise5 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_bias_noise5/forward_sigxx_ln_0_0001.csv')
+df_bias_noise10 = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_bias_noise10/forward_sigxx_ln_0_0001.csv')
+df = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_outputs/forward_sigxx_ln_0_0001.csv')
+
+df_noise0 = df_noise0[df_noise0['y'] >= (height-cut)*1e-3];
+df_noise1 = df_noise1[df_noise1['y'] >= (height-cut)*1e-3];
+df_noise5 = df_noise5[df_noise5['y'] >= (height-cut)*1e-3];
+df_noise10 = df_noise10[df_noise10['y'] >= (height-cut)*1e-3];
+df_bias_noise0 = df_bias_noise0[df_bias_noise0['y'] >= (height-cut)*1e-3];
+df_bias_noise1 = df_bias_noise1[df_bias_noise1['y'] >= (height-cut)*1e-3];
+df_bias_noise5 = df_bias_noise5[df_bias_noise5['y'] >= (height-cut)*1e-3];
+df_bias_noise10 = df_bias_noise10[df_bias_noise10['y'] >= (height-cut)*1e-3];
+df = df[df['y'] >= (height-cut)*1e-3];
 
 #-------------------------------------------------------------------------------
-df_reg = pd.read_csv('cut_0.90e-3_noise0/forward_params_cutFace_0001.csv')
-df_bias = pd.read_csv('cut_0.90e-3_bias_noise0/forward_params_cutFace_0001.csv')
+df_reg = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_noise0/forward_params_cutFace_0001.csv')
+df_bias = pd.read_csv('cut_{:.2f}'.format(cut)+'e-3_bias_noise0/forward_params_cutFace_0001.csv')
 reg_y_coords =np.array([1.0000E-04, 1.9000E-04, 2.8000E-04, 3.7000E-04, 4.6000E-04, 5.5000E-04, \
   6.4000E-04, 7.3000E-04, 8.2000E-04, 9.1000E-04, 1.0000E-03])
 bias_y_coords =np.array([1.0000E-04, 2.8700E-04, 4.1790E-04, 5.0953E-04, 5.7367E-04, \
@@ -43,10 +55,11 @@ plt.plot(df_noCut['y']*1e3,df_noCut['stress_xx']/1e6,'-',\
              linewidth=2,marker='*',label='Synthetic Data')
 plt.plot(df['y']*1e3,-df['stress_xx']/1e6,'--',\
              linewidth=2,marker='o',label='Inverted')
+plt.ylim(-450,450)
 plt.ylabel("stress xx (MPa)")
 plt.xlabel("y_coord (mm)")
 plt.legend(loc='best', ncol=1)
-plt.tight_layout()
+# plt.tight_layout()
 
 
 fig=plt.figure()
@@ -60,6 +73,7 @@ plt.plot(df_noise10['y']*1e3,-df_noise10['stress_xx']/1e6,'--',\
              linewidth=1,marker='*',markersize=4,label='noise=10')
 plt.plot(df_noCut['y']*1e3,df_noCut['stress_xx']/1e6,'--',\
              linewidth=1,color='k',label='Synthetic Data')
+plt.ylim(-450,450)
 plt.ylabel("stress xx (MPa)")
 plt.xlabel("y_coord (mm)")
 plt.legend(loc='best', ncol=1)
@@ -76,6 +90,7 @@ plt.plot(df_bias_noise10['y']*1e3,-df_bias_noise10['stress_xx']/1e6,'--',\
              linewidth=1,marker='*',markersize=4,label='noise=10')
 plt.plot(df_noCut['y']*1e3,df_noCut['stress_xx']/1e6,'--',\
              linewidth=1,color='k',label='Synthetic Data')
+plt.ylim(-450,450)
 plt.ylabel("stress xx (MPa)")
 plt.xlabel("y_coord (mm)")
 plt.legend(loc='best', ncol=1)
