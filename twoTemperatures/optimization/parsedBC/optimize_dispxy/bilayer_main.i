@@ -1,14 +1,13 @@
-totalCut = 0.05e-3
+totalCut = 0.20e-3
 
 [Optimization]
 []
 
-measurementDir = '/Users/mundlb/projects/isopod_inputs/residualStress/twoTemperatures/syntheticData'
 [OptimizationReporter]
   type = OptimizationReporter
   parameter_names = 'cutFaceForce'
   num_values = '1'
-  measurement_file = '${measurementDir}/cut_${totalCut}_outputs/resultsFilter_diff.csv'
+  measurement_file = 'resultsFilter_cut_0.20e-3.csv'
   # initial_condition = '50000'
   file_xcoord = 'x'
   file_ycoord = 'y'
